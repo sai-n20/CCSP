@@ -29,24 +29,6 @@ int main(int argc, char *argv[]){
   g.display();
   g.createPQ();
 
-  // inputGraph = g.returnGraph();
-  // std::cout<< inputGraph[0].outgoing;
-  
-  // int costList[] = {10, 14, 15, 18, 26};
-  // int timeList[] = {34, 15, 26, 19, 22};
-
-//   if(g.topo_sort(id_order)) 
-//     std::cout << "topo sort succeeded!\n";
-//   else 
-//     std::cout << "topo sort failed (cycle?)!\n";
-
-//   g.ids2names(id_order, name_order);
-
-//   std::cout << "here is the topological order produced:\n\n";
-
-//   pvec(name_order);
-
-
   return 0;
 }
 
