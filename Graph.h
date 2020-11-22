@@ -119,9 +119,20 @@ void pvec(const std::vector<T>& vec) {
 
 class graph {
 
+public:
+	struct edge {
+		int vertex_id;
+		double weight;
+		double weight2;  // for doubly-weighted graphs
+		edge(int vtx_id = 0, double _weight = 1.0, double _wt2 = 1.0)
+			: vertex_id{ vtx_id }, weight{ _weight }, weight2{ _wt2 }
+		{ }
+	};
+
 private:
 
-	// typedef pair<int, int> pi;
+	// typedef std::pair<unsigned int, unsigned int> pi;
+	// typedef std::pair<unsigned int, std::pair<unsigned int, unsigned int>> triplet;
 
 	// note:  this struct does not store both
 	//   vertices in the edge -- just one.  This
@@ -130,26 +141,18 @@ private:
 	//   edge struct is stored in a vector associated
 	//   with the other vertex.
 
-	// struct costtimevertex {
-	// 	unsigned int cost;
-	// 	unsigned int time;
-	// 	unsigned int vertex;
+	struct costtimevertex {
+		unsigned int cost;
+		unsigned int time;
+		unsigned int vertex;
 
-	// 	costtimevertex(int n1, int n2, int n3) : cost(n1), time(n2), vertex(n3) {
-	// 	}
+		costtimevertex(int n1, int n2, int n3) : cost(n1), time(n2), vertex(n3) {
+		}
 
-	// 	bool operator<(const struct costtimevertex& other) const {
-	// 		return cost < other.cost;
-	// 	}
-	// };
-
-	struct edge {
-		int vertex_id;
-		double weight;
-		double weight2;  // for doubly-weighted graphs
-		edge(int vtx_id = 0, double _weight = 1.0, double _wt2 = 1.0)
-			: vertex_id{ vtx_id }, weight{ _weight }, weight2{ _wt2 }
-		{ }
+		bool operator<(const struct costtimevertex& other) const {
+			if(cost == other.cost) { return time > other.time; }
+			return cost > other.cost;
+		}
 	};
 
 	// a vertex struct stores all info about a particular
@@ -475,33 +478,32 @@ public:
 	}
 
 	void createPQ() {
-		// std::priority_queue<std::pair<double, double>, std::greater<std::pair<double, double>>> testQ;
-		// std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, std::greater<std::pair<int, int>> > testQ;
-		
-		std::priority_queue<edge, std::vector<edge>, std::greater<edge> > testQ;
-		
+		std::priority_queue<costtimevertex> testQ;
+		// std::priority_queue<edge, std::vector<edge>, std::greater<edge> > testQ;
+
+		// std::vector<pi> tradeoffs;
+		// std::queue<unsigned int> que;
+		// que.push(vertices[0].id);
+		// while(!que.empty()) {
+		// 	for (edge&e : vertices[que.front()].outgoing) {
+		// 		testQ.push(std::make_pair(e.weight, e.weight2));
+		// 	}
+		// 	tradeoffs.at(que.front()) = testQ.top();
+		// }
+
 		// pq.push(edge(id2name(e.vertex_id), e.weight, e.weight2)));
 		for (int u = 0; u < vertices.size(); u++) {
 			for (edge& e : vertices[u].outgoing) {
-				testQ.push(edge(e.vertex_id, e.weight, e.weight2));
+				testQ.push(costtimevertex(e.weight, e.weight2, u));
 			}
 		}
 		while(!testQ.empty()) {
-          edge e1 = testQ.top();
+		  costtimevertex top = testQ.top();
+		  std::cout << "<(" << top.cost << ", " << top.time << "), " << top.vertex << ">\n";
           testQ.pop();
-          std::cout << id2name(e1.vertex_id) << " , " << e1.weight << " , " << e1.weight2 << " \n"; 
       }
-		// testQ.push(std::make_pair(4, 2)); 
-		// testQ.push(std::make_pair(2, 4)); 
-		// testQ.push(std::make_pair(1, 2)); 
-
-		// std::pair<int, int> top = pq.top();
-		// std::cout << top.first << " " << top.second;
 	}
 
-	std::vector<graph::vertex> returnGraph() {
-		return vertices;
-	}
 
 	/*
 	 * func: ids2names
