@@ -144,13 +144,13 @@ private:
 	struct costtimevertex {
 		unsigned int cost;
 		unsigned int time;
-		unsigned int vertex;
+		std::string vertex;
 
-		costtimevertex(int n1, int n2, int n3) : cost(n1), time(n2), vertex(n3) {
+		costtimevertex(int n1, int n2, std::string n3) : cost(n1), time(n2), vertex(n3) {
 		}
 
 		bool operator<(const struct costtimevertex& other) const {
-			if(cost == other.cost) { return time > other.time; }
+			if (cost == other.cost) { return time > other.time; }
 			return cost > other.cost;
 		}
 	};
@@ -494,14 +494,14 @@ public:
 		// pq.push(edge(id2name(e.vertex_id), e.weight, e.weight2)));
 		for (int u = 0; u < vertices.size(); u++) {
 			for (edge& e : vertices[u].outgoing) {
-				testQ.push(costtimevertex(e.weight, e.weight2, u));
+				testQ.push(costtimevertex(e.weight, e.weight2, id2name(e.vertex_id)));
 			}
 		}
-		while(!testQ.empty()) {
-		  costtimevertex top = testQ.top();
-		  std::cout << "<(" << top.cost << ", " << top.time << "), " << top.vertex << ">\n";
-          testQ.pop();
-      }
+		while (!testQ.empty()) {
+			costtimevertex top = testQ.top();
+			std::cout << "<(" << top.cost << ", " << top.time << "), " << top.vertex << ">\n";
+			testQ.pop();
+		}
 	}
 
 
