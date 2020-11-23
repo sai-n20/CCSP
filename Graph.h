@@ -131,7 +131,7 @@ public:
 
 private:
 
-	// typedef std::pair<unsigned int, unsigned int> pi;
+	typedef std::pair<unsigned int, unsigned int> pi;
 	// typedef std::pair<unsigned int, std::pair<unsigned int, unsigned int>> triplet;
 
 	// note:  this struct does not store both
@@ -466,14 +466,9 @@ public:
 	}
 
 	void displayNew() {
-		int u;
-
-		for (u = 0; u < vertices.size(); u++) {
-			std::cout << vertices[u].name << " : ";
-
-			for (edge& e : vertices[u].outgoing)
-				p_edge(e);
-			std::cout << "\n";
+		for (int u = 0; u < vertices.size(); u++) {
+			std::cout << u << ": " << vertices[u].name;
+			std::cout << vertices[u].id << "\n";
 		}
 	}
 
@@ -481,27 +476,76 @@ public:
 		std::priority_queue<costtimevertex> testQ;
 		// std::priority_queue<edge, std::vector<edge>, std::greater<edge> > testQ;
 
-		// std::vector<pi> tradeoffs;
-		// std::queue<unsigned int> que;
-		// que.push(vertices[0].id);
-		// while(!que.empty()) {
-		// 	for (edge&e : vertices[que.front()].outgoing) {
-		// 		testQ.push(std::make_pair(e.weight, e.weight2));
-		// 	}
-		// 	tradeoffs.at(que.front()) = testQ.top();
-		// }
-
-		// pq.push(edge(id2name(e.vertex_id), e.weight, e.weight2)));
-		for (int u = 0; u < vertices.size(); u++) {
-			for (edge& e : vertices[u].outgoing) {
-				testQ.push(costtimevertex(e.weight, e.weight2, id2name(e.vertex_id)));
+		std::vector<std::vector<pi>> tradeoffs;
+		tradeoffs = std::vector<std::vector<pi>>(vertices.size(), std::vector<pi>());
+		std::queue<unsigned int> que;
+		que.push(vertices[0].id);
+		unsigned int runningCost, runningTime = 0;
+		while (!que.empty()) {
+			bool conflictFlag = true;
+			for (edge& e : vertices[que.front()].outgoing) {
+				testQ.push(costtimevertex(e.weight + runningCost, e.weight2 + runningTime, id2name(e.vertex_id)));
+				// testQ.push(costtimevertex(e.weight, e.weight2, id2name(e.vertex_id)));
 			}
-		}
-		while (!testQ.empty()) {
+
+			// DEBUG HEAP ENTRIES CODE BLOCK
+			// std::priority_queue<costtimevertex> test1Q = testQ;
+			// while (!test1Q.empty()) {
+			// 	costtimevertex top1 = test1Q.top();
+			// 	std::cout << "<(" << top1.cost << ", " << top1.time << "), " << top1.vertex << "> => ";
+			// 	test1Q.pop();
+			// }
+			// std::cout << "\n";
+
 			costtimevertex top = testQ.top();
-			std::cout << "<(" << top.cost << ", " << top.time << "), " << top.vertex << ">\n";
 			testQ.pop();
+			while (conflictFlag) {
+				if (tradeoffs.at(stoi(top.vertex)).size() > 0) {
+					if (tradeoffs.at(stoi(top.vertex)).at(tradeoffs.at(stoi(top.vertex)).size() - 1).second > top.time) {
+						tradeoffs.at(stoi(top.vertex)).push_back(std::make_pair(top.cost, top.time));
+						conflictFlag = false;
+					}
+					else {
+						top = testQ.top();
+						testQ.pop();
+					}
+				}
+				else {
+					tradeoffs.at(stoi(top.vertex)).push_back(std::make_pair(top.cost, top.time));
+					conflictFlag = false;
+				}
+			}
+			runningCost = top.cost;
+			runningTime = top.time;
+			que.pop();
+			
+			// DEBUG VALUES BEING POPPED FROM HEAP
+			// std::cout << top.vertex << ": " << runningCost << ", " << runningTime << "\n";
+			
+			// STOP WHEN ONE PATH FOUND, NEED TO REFINE THIS LATER
+			if (tradeoffs.at(6).size() > 0) { break; }
+			que.push(stoi(top.vertex));
 		}
+
+		// PRINT TRADEOFF MATRIX AS PER WORKSHEET
+		for(int i = 0; i < tradeoffs.size(); i++) {
+			std::cout << "P[" << i << "]: ";
+			for(int j = 0; j < tradeoffs.at(i).size(); j++) {
+				std::cout << "(" << tradeoffs.at(i).at(j).first << ", " << tradeoffs.at(i).at(j).second << ")";
+			}
+			std::cout << "\n";
+		}
+
+		// for (int u = 0; u < vertices.size(); u++) {
+		// 	for (edge& e : vertices[u].outgoing) {
+		// 		testQ.push(costtimevertex(e.weight, e.weight2, id2name(e.vertex_id)));
+		// 	}
+		// }
+		// while (!testQ.empty()) {
+		// 	costtimevertex top = testQ.top();
+		// 	std::cout << "<(" << top.cost << ", " << top.time << "), " << top.vertex << ">\n";
+		// 	testQ.pop();
+		// }
 	}
 
 
