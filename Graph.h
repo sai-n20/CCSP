@@ -466,26 +466,32 @@ public:
 	}
 
 	void displayNew() {
-		for (int u = 0; u < vertices.size(); u++) {
-			std::cout << u << ": " << vertices[u].name;
-			std::cout << vertices[u].id << "\n";
+		// for (int u = 0; u < vertices.size(); u++) {
+		// 	std::cout << u << ": " << vertices[u].name;
+		// 	std::cout << vertices[u].id << "\n";
+		// }
+		// SEARCH WHERE THIS VERTEX IS IN VERTICES FIRST
+		for (edge& e : vertices[stoi(id2name(2))].outgoing) {
+			std::cout << id2name(e.vertex_id) << " ";
 		}
 	}
 
 	void createPQ() {
 		std::priority_queue<costtimevertex> testQ;
-		// std::priority_queue<edge, std::vector<edge>, std::greater<edge> > testQ;
-
 		std::vector<std::vector<pi>> tradeoffs;
 		tradeoffs = std::vector<std::vector<pi>>(vertices.size(), std::vector<pi>());
 		std::queue<unsigned int> que;
-		que.push(vertices[0].id);
-		unsigned int runningCost, runningTime = 0;
+		que.push(0);
+		unsigned int runningCost = 0;
+		unsigned int runningTime = 0;
+		unsigned int vertexToSearch = 0;
 		while (!que.empty()) {
 			bool conflictFlag = true;
-			for (edge& e : vertices[que.front()].outgoing) {
+			for (int u = 0; u < vertices.size(); u++) {
+				if(stoi(vertices[u].name) == que.front()) { vertexToSearch = u; break; }
+			}
+			for (edge& e : vertices[vertexToSearch].outgoing) {
 				testQ.push(costtimevertex(e.weight + runningCost, e.weight2 + runningTime, id2name(e.vertex_id)));
-				// testQ.push(costtimevertex(e.weight, e.weight2, id2name(e.vertex_id)));
 			}
 
 			// DEBUG HEAP ENTRIES CODE BLOCK
@@ -518,12 +524,12 @@ public:
 			runningCost = top.cost;
 			runningTime = top.time;
 			que.pop();
-			
+
 			// DEBUG VALUES BEING POPPED FROM HEAP
 			// std::cout << top.vertex << ": " << runningCost << ", " << runningTime << "\n";
-			
+
 			// STOP WHEN ONE PATH FOUND, NEED TO REFINE THIS LATER
-			if (tradeoffs.at(6).size() > 0) { break; }
+			if (tradeoffs.at(6).size() > 1) { break; }
 			que.push(stoi(top.vertex));
 		}
 
