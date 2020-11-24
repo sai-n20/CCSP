@@ -145,8 +145,9 @@ private:
 		unsigned int cost;
 		unsigned int time;
 		std::string vertex;
+		std::string path;
 
-		costtimevertex(int n1, int n2, std::string n3) : cost(n1), time(n2), vertex(n3) {
+		costtimevertex(int n1, int n2, std::string n3, std::string n4) : cost(n1), time(n2), vertex(n3), path(n4) {
 		}
 
 		bool operator<(const struct costtimevertex& other) const {
@@ -477,7 +478,7 @@ public:
 	}
 
 	void createPQ() {
-		std::priority_queue<costtimevertex> testQ;
+		std::priority_queue<costtimevertex> minQ;
 		std::vector<std::vector<pi>> tradeoffs;
 		tradeoffs = std::vector<std::vector<pi>>(vertices.size(), std::vector<pi>());
 		std::queue<unsigned int> que;
@@ -485,26 +486,27 @@ public:
 		unsigned int runningCost = 0;
 		unsigned int runningTime = 0;
 		unsigned int vertexToSearch = 0;
+		std::string runningPath = "";
 		while (!que.empty()) {
 			bool conflictFlag = true;
 			for (int u = 0; u < vertices.size(); u++) {
 				if(stoi(vertices[u].name) == que.front()) { vertexToSearch = u; break; }
 			}
 			for (edge& e : vertices[vertexToSearch].outgoing) {
-				testQ.push(costtimevertex(e.weight + runningCost, e.weight2 + runningTime, id2name(e.vertex_id)));
+				minQ.push(costtimevertex(e.weight + runningCost, e.weight2 + runningTime, id2name(e.vertex_id), runningPath + std::to_string(que.front()) + "-> "));
 			}
 
 			// DEBUG HEAP ENTRIES CODE BLOCK
-			// std::priority_queue<costtimevertex> test1Q = testQ;
+			// std::priority_queue<costtimevertex> test1Q = minQ;
 			// while (!test1Q.empty()) {
 			// 	costtimevertex top1 = test1Q.top();
-			// 	std::cout << "<(" << top1.cost << ", " << top1.time << "), " << top1.vertex << "> => ";
+			// 	std::cout << "<(" << top1.cost << ", " << top1.time << "), " << top1.vertex << ", " << top1.path << "> => ";
 			// 	test1Q.pop();
 			// }
 			// std::cout << "\n";
 
-			costtimevertex top = testQ.top();
-			testQ.pop();
+			costtimevertex top = minQ.top();
+			minQ.pop();
 			while (conflictFlag) {
 				if (tradeoffs.at(stoi(top.vertex)).size() > 0) {
 					if (tradeoffs.at(stoi(top.vertex)).at(tradeoffs.at(stoi(top.vertex)).size() - 1).second > top.time) {
@@ -512,8 +514,8 @@ public:
 						conflictFlag = false;
 					}
 					else {
-						top = testQ.top();
-						testQ.pop();
+						top = minQ.top();
+						minQ.pop();
 					}
 				}
 				else {
@@ -523,13 +525,14 @@ public:
 			}
 			runningCost = top.cost;
 			runningTime = top.time;
+			runningPath = top.path;
 			que.pop();
 
 			// DEBUG VALUES BEING POPPED FROM HEAP
 			// std::cout << top.vertex << ": " << runningCost << ", " << runningTime << "\n";
 
 			// STOP WHEN ONE PATH FOUND, NEED TO REFINE THIS LATER
-			if (tradeoffs.at(6).size() > 1) { break; }
+			if (tradeoffs.at(6).size() > 0) { break; }
 			que.push(stoi(top.vertex));
 		}
 
@@ -541,6 +544,8 @@ public:
 			}
 			std::cout << "\n";
 		}
+
+		std::cout << "Path taken: " << runningPath + "6";
 
 		// for (int u = 0; u < vertices.size(); u++) {
 		// 	for (edge& e : vertices[u].outgoing) {
