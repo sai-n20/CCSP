@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
   // std::cout << "\nADJACENCY-LIST REPRESENTATION:\n\n";
   // g.display();
   // g.displayNew();
-  g.createPQ();
+  g.createPQ(source, dest);
 
   return 0;
 }

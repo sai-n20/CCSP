@@ -477,20 +477,24 @@ public:
 		}
 	}
 
-	void createPQ() {
+	void createPQ(unsigned int source, unsigned int destination) {
 		std::priority_queue<costtimevertex> minQ;
 		std::vector<std::vector<pi>> tradeoffs;
 		tradeoffs = std::vector<std::vector<pi>>(vertices.size(), std::vector<pi>());
 		std::queue<unsigned int> que;
-		que.push(0);
+		que.push(source);
 		unsigned int runningCost = 0;
 		unsigned int runningTime = 0;
 		unsigned int vertexToSearch = 0;
 		std::string runningPath = "";
+		std::vector<std::string> paths;
+		std::vector<unsigned int> costs;
+		std::vector<unsigned int> times;
+		tradeoffs.at(source).push_back(std::make_pair(0, 0));
 		while (!que.empty()) {
 			bool conflictFlag = true;
 			for (int u = 0; u < vertices.size(); u++) {
-				if(stoi(vertices[u].name) == que.front()) { vertexToSearch = u; break; }
+				if (stoi(vertices[u].name) == que.front()) { vertexToSearch = u; break; }
 			}
 			for (edge& e : vertices[vertexToSearch].outgoing) {
 				minQ.push(costtimevertex(e.weight + runningCost, e.weight2 + runningTime, id2name(e.vertex_id), runningPath + std::to_string(que.front()) + "-> "));
@@ -508,44 +512,64 @@ public:
 			costtimevertex top = minQ.top();
 			minQ.pop();
 			while (conflictFlag) {
-				if (tradeoffs.at(stoi(top.vertex)).size() > 0) {
-					if (tradeoffs.at(stoi(top.vertex)).at(tradeoffs.at(stoi(top.vertex)).size() - 1).second > top.time) {
+				if (!minQ.empty()) {
+					if (tradeoffs.at(stoi(top.vertex)).size() > 0) {
+						if (tradeoffs.at(stoi(top.vertex)).at(tradeoffs.at(stoi(top.vertex)).size() - 1).second > top.time) {
+							tradeoffs.at(stoi(top.vertex)).push_back(std::make_pair(top.cost, top.time));
+							conflictFlag = false;
+						}
+						else {
+							top = minQ.top();
+							minQ.pop();
+						}
+					}
+					else {
 						tradeoffs.at(stoi(top.vertex)).push_back(std::make_pair(top.cost, top.time));
 						conflictFlag = false;
 					}
-					else {
-						top = minQ.top();
-						minQ.pop();
-					}
 				}
-				else {
-					tradeoffs.at(stoi(top.vertex)).push_back(std::make_pair(top.cost, top.time));
-					conflictFlag = false;
-				}
+				else { break; }
 			}
 			runningCost = top.cost;
 			runningTime = top.time;
 			runningPath = top.path;
+			if(!minQ.empty() && stoi(top.vertex) == destination) {
+				costs.push_back(runningCost);
+				times.push_back(runningTime);
+				paths.push_back(runningPath + std::to_string(destination));
+			}
 			que.pop();
 
 			// DEBUG VALUES BEING POPPED FROM HEAP
 			// std::cout << top.vertex << ": " << runningCost << ", " << runningTime << "\n";
 
 			// STOP WHEN ONE PATH FOUND, NEED TO REFINE THIS LATER
-			if (tradeoffs.at(6).size() > 0) { break; }
+			// if (tradeoffs.at(destination).size() > 0) { break; }
+			if (minQ.empty()) { break; }
 			que.push(stoi(top.vertex));
 		}
 
 		// PRINT TRADEOFF MATRIX AS PER WORKSHEET
-		for(int i = 0; i < tradeoffs.size(); i++) {
+		for (int i = 0; i < tradeoffs.size(); i++) {
 			std::cout << "P[" << i << "]: ";
-			for(int j = 0; j < tradeoffs.at(i).size(); j++) {
+			for (int j = 0; j < tradeoffs.at(i).size(); j++) {
 				std::cout << "(" << tradeoffs.at(i).at(j).first << ", " << tradeoffs.at(i).at(j).second << ")";
 			}
 			std::cout << "\n";
 		}
 
-		std::cout << "Path taken: " << runningPath + "6";
+		for(int i = 0; i < costs.size(); i++) {
+			std::cout << costs.at(i) << " ";
+		}
+		std::cout << "\n";
+		for(int i = 0; i < times.size(); i++) {
+			std::cout << times.at(i) << " ";
+		}
+		std::cout << "\n";
+		for(int i = 0; i < paths.size(); i++) {
+			std::cout << paths.at(i) << "\n";
+		}
+		// std::cout << "Path taken: " << runningPath + "6";
 
 		// for (int u = 0; u < vertices.size(); u++) {
 		// 	for (edge& e : vertices[u].outgoing) {
