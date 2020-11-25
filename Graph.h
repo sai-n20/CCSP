@@ -477,7 +477,7 @@ public:
 		}
 	}
 
-	void createPQ(unsigned int source, unsigned int destination) {
+	void createPQ(unsigned int source, unsigned int destination, unsigned int budget) {
 		std::priority_queue<costtimevertex> minQ;
 		std::vector<std::vector<pi>> tradeoffs;
 		tradeoffs = std::vector<std::vector<pi>>(vertices.size(), std::vector<pi>());
@@ -543,8 +543,6 @@ public:
 			// DEBUG VALUES BEING POPPED FROM HEAP
 			// std::cout << top.vertex << ": " << runningCost << ", " << runningTime << "\n";
 
-			// STOP WHEN ONE PATH FOUND, NEED TO REFINE THIS LATER
-			// if (tradeoffs.at(destination).size() > 0) { break; }
 			if (minQ.empty()) { break; }
 			que.push(stoi(top.vertex));
 		}
@@ -558,29 +556,25 @@ public:
 			std::cout << "\n";
 		}
 
+		std::cout << "\nCost\tTime\tPath\n";
 		for(int i = 0; i < costs.size(); i++) {
-			std::cout << costs.at(i) << " ";
+			std::cout << costs.at(i) << "\t" << times.at(i) << "\t" << paths.at(i) << "\n";
 		}
 		std::cout << "\n";
-		for(int i = 0; i < times.size(); i++) {
-			std::cout << times.at(i) << " ";
+		for(int i = 0; i < costs.size(); i++) {
+			if(i == 0 && budget < costs.at(i)) {
+				std::cout << "No path is feasible for a budget of " << budget << " units. Cheapest path needs an additional budget of " << costs.at(i) - budget;
+				break;
+			}
+			if(budget < costs.at(i)) {
+				std::cout << "With a budget of " << budget << " units,\nFollowing path is your best option: " << paths.at(i - 1) << "\nThis path costs " << costs.at(i - 1) << " units and nets you a time of " << times.at(i - 1) << " units.";
+				break;
+			}
+			if((i == costs.size() - 1) && budget >= costs.at(i)) {
+				std::cout << "With a budget of " << budget << " units,\nFollowing path is the best option: " << paths.at(i) << "\nThis path costs " << costs.at(i) << " units and nets you the best time of " << times.at(i) << " units.";
+				break;
+			}
 		}
-		std::cout << "\n";
-		for(int i = 0; i < paths.size(); i++) {
-			std::cout << paths.at(i) << "\n";
-		}
-		// std::cout << "Path taken: " << runningPath + "6";
-
-		// for (int u = 0; u < vertices.size(); u++) {
-		// 	for (edge& e : vertices[u].outgoing) {
-		// 		testQ.push(costtimevertex(e.weight, e.weight2, id2name(e.vertex_id)));
-		// 	}
-		// }
-		// while (!testQ.empty()) {
-		// 	costtimevertex top = testQ.top();
-		// 	std::cout << "<(" << top.cost << ", " << top.time << "), " << top.vertex << ">\n";
-		// 	testQ.pop();
-		// }
 	}
 
 
