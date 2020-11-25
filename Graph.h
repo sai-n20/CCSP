@@ -132,7 +132,6 @@ public:
 private:
 
 	typedef std::pair<unsigned int, unsigned int> pi;
-	// typedef std::pair<unsigned int, std::pair<unsigned int, unsigned int>> triplet;
 
 	// note:  this struct does not store both
 	//   vertices in the edge -- just one.  This
@@ -466,17 +465,6 @@ public:
 		}
 	}
 
-	void displayNew() {
-		// for (int u = 0; u < vertices.size(); u++) {
-		// 	std::cout << u << ": " << vertices[u].name;
-		// 	std::cout << vertices[u].id << "\n";
-		// }
-		// SEARCH WHERE THIS VERTEX IS IN VERTICES FIRST
-		for (edge& e : vertices[stoi(id2name(2))].outgoing) {
-			std::cout << id2name(e.vertex_id) << " ";
-		}
-	}
-
 	void createPQ(unsigned int source, unsigned int destination, unsigned int budget) {
 		std::priority_queue<costtimevertex> minQ;
 		std::vector<std::vector<pi>> tradeoffs;
@@ -499,15 +487,6 @@ public:
 			for (edge& e : vertices[vertexToSearch].outgoing) {
 				minQ.push(costtimevertex(e.weight + runningCost, e.weight2 + runningTime, id2name(e.vertex_id), runningPath + std::to_string(que.front()) + "-> "));
 			}
-
-			// DEBUG HEAP ENTRIES CODE BLOCK
-			// std::priority_queue<costtimevertex> test1Q = minQ;
-			// while (!test1Q.empty()) {
-			// 	costtimevertex top1 = test1Q.top();
-			// 	std::cout << "<(" << top1.cost << ", " << top1.time << "), " << top1.vertex << ", " << top1.path << "> => ";
-			// 	test1Q.pop();
-			// }
-			// std::cout << "\n";
 
 			costtimevertex top = minQ.top();
 			minQ.pop();
@@ -539,9 +518,6 @@ public:
 				paths.push_back(runningPath + std::to_string(destination));
 			}
 			que.pop();
-
-			// DEBUG VALUES BEING POPPED FROM HEAP
-			// std::cout << top.vertex << ": " << runningCost << ", " << runningTime << "\n";
 
 			if (minQ.empty()) { break; }
 			que.push(stoi(top.vertex));
