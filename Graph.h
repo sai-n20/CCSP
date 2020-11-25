@@ -548,10 +548,11 @@ public:
 		}
 
 		// PRINT TRADEOFF MATRIX AS PER WORKSHEET
+		std::cout << "\nTradeoff curves:-\n";
 		for (int i = 0; i < tradeoffs.size(); i++) {
 			std::cout << "P[" << i << "]: ";
 			for (int j = 0; j < tradeoffs.at(i).size(); j++) {
-				std::cout << "(" << tradeoffs.at(i).at(j).first << ", " << tradeoffs.at(i).at(j).second << ")";
+				std::cout << "(" << tradeoffs.at(i).at(j).first << ", " << tradeoffs.at(i).at(j).second << ") ";
 			}
 			std::cout << "\n";
 		}
@@ -563,15 +564,15 @@ public:
 		std::cout << "\n";
 		for(int i = 0; i < costs.size(); i++) {
 			if(i == 0 && budget < costs.at(i)) {
-				std::cout << "No path is feasible for a budget of " << budget << " units. Cheapest path needs an additional budget of " << costs.at(i) - budget;
+				std::cout << "No path is feasible for a budget of " << budget << " units. Cheapest path needs an additional budget of " << costs.at(i) - budget << "\n";
 				break;
 			}
 			if(budget < costs.at(i)) {
-				std::cout << "With a budget of " << budget << " units,\nFollowing path is your best option: " << paths.at(i - 1) << "\nThis path costs " << costs.at(i - 1) << " units and nets you a time of " << times.at(i - 1) << " units.";
+				std::cout << "With a budget of " << budget << " units,\nFollowing path is your best option: " << paths.at(i - 1) << "\nThis path costs " << costs.at(i - 1) << " units and nets you a time of " << times.at(i - 1) << " units.\n";
 				break;
 			}
 			if((i == costs.size() - 1) && budget >= costs.at(i)) {
-				std::cout << "With a budget of " << budget << " units,\nFollowing path is the best option: " << paths.at(i) << "\nThis path costs " << costs.at(i) << " units and nets you the best time of " << times.at(i) << " units.";
+				std::cout << "With a budget of " << budget << " units,\nFollowing path is the best option: " << paths.at(i) << "\nThis path costs " << costs.at(i) << " units and nets you the best time of " << times.at(i) << " units.\n";
 				break;
 			}
 		}
