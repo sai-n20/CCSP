@@ -6,9 +6,9 @@ Usage of my implementation is with the following command:
 ```bash
 cpath <file> <s> <d> <budget>
 ```
-<s> is the source vertex
-<d> is the destination vertex
-<budget> is the fixed cost you can afford to spend on a path
+"s" is the source vertex
+"d" is the destination vertex
+"budget" is the fixed cost you can afford to spend on a path
 The program reads a graph file for input.
 The file reading procedure has been left unchanged from what was provided to start off.
 The program only works with integer vertices.
