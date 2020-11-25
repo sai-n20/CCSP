@@ -4,8 +4,6 @@
 
 int main(int argc, char* argv[]) {
   graph g;
-  std::vector<graph::vertex_label> ccsp_rpt;
-  std::vector<graph::vertex_label> ctsp_rpt;
   unsigned int source;
   unsigned int dest;
   unsigned int budget;
@@ -25,10 +23,7 @@ int main(int argc, char* argv[]) {
   dest = atoi(argv[3]);
   budget = atoi(argv[4]);
 
-  // std::cout << "\nADJACENCY-LIST REPRESENTATION:\n\n";
-  // g.display();
-  // g.displayNew();
-  g.createPQ(source, dest);
+  g.createPQ(source, dest, budget);
 
   return 0;
 }
